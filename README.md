@@ -43,7 +43,7 @@ A live demo of the project can be found at [this address](https://node-snake-gam
 * [Socket.io](https://socket.io/)
  
 # Author
-* **Corentin Boulanouar** - *lead developer* - [Shawnuke](https://github.com/Shawnuke)
+* **Corentin Boulanouar** - [Shawnuke](https://github.com/Shawnuke)
  
 # License
 [MIT](LICENSE) © Corentin Boulanouar
