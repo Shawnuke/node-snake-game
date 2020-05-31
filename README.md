@@ -33,6 +33,7 @@ A live demo of the project can be found at [this address](https://node-snake-gam
  
 # Todo
 - add smartphone controls to play
+- add favicon
  
 # Known Issues
 - 
