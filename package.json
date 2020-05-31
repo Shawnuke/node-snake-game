@@ -8,9 +8,9 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "tsc -b server.tsconfig.json",
-    "prebuild": "tsc",
-    "postbuild": "stylus ./src/style.styl -o ./public/assets/css/style.css"
+    "compile": "tsc -b server.tsconfig.json",
+    "precompile": "tsc",
+    "postcompile": "stylus ./src/style.styl -o ./public/assets/css/style.css"
   },
   "engines": {
     "node": "6.11.2"
