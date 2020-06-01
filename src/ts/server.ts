@@ -64,11 +64,14 @@ const newConnection = (socket) =>
      * Rooms management
      */
     const origin: string = socket.handshake.headers.referer // url of client
-    global.URL = require('url').URL
-    const url = new URL(origin)
-    const path = url.pathname.substring(1)
+    // global.URL = require('url').URL
+    // const url = new URL(origin)
+    // const path = url.pathname.substring(1)
 
-    const currentRoom = assignRoom(path) // assign a room to the client
+    const url = socket.handshake.headers.referer
+	const newURL = url.substring(url.lastIndexOf("/") + 1, url.length)
+
+    const currentRoom = assignRoom(newURL) // assign a room to the client
     console.log('the room assigned is', currentRoom)
 
     if (currentRoom == null) // if joining a room failed
