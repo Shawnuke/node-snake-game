@@ -64,6 +64,7 @@ const newConnection = (socket) =>
      * Rooms management
      */
     const origin: string = socket.handshake.headers.referer // url of client
+    const URL = require('url').URL
     const url = new URL(origin)
     const path = url.pathname.substring(1)
 
