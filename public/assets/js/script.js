@@ -5,14 +5,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // const room = url.get('room')
     const connect = () => {
         const socket = io();
-        socket.emit('handshake', path);
-        socket.on('connectToRoom', (data) => {
-            document.body.innerHTML = '';
-            document.write(data);
-        });
-        console.log('give this link to your friend');
+        if (path) // 2nd or 3rd player
+         {
+            socket.emit('handshake', path);
+        }
+        else // 1st player
+         {
+            console.log('give this link to your friend');
+        }
         socket.on('chat message', (msg) => {
             console.log(msg);
+        });
+        let silent = false;
+        socket.on('errorMsg', (msg) => {
+            switch (msg) {
+                case '1':
+                    console.log('Sorry, but the party you\'re trying to join is either full or empty. Make sure you wrote the address right, or please ask your friend to try again.');
+                    break;
+                default:
+                    console.log(msg);
+                    break;
+            }
+            silent = true;
+        });
+        socket.on('disconnect', () => {
+            if (!silent)
+                console.log('you were disconnected');
+        });
+        const $toto = document.querySelector('.toto');
+        $toto.addEventListener('click', () => {
+            socket.disconnect();
         });
     };
     $button.addEventListener('click', () => {
