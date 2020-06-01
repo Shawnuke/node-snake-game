@@ -34,6 +34,8 @@ A live demo of the project can be found at [this address](https://node-snake-gam
 # Todo
 - add smartphone controls to play
 - add favicon
+- use cache to keep trace of scores
+- generate canvas color scheme on page load
  
 # Known Issues
 - 
