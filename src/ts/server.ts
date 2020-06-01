@@ -1,3 +1,5 @@
+import { Socket } from "dgram"
+
 const express = require('express')
 const app = express()
 const port = process.env.PORT || 3000
@@ -7,23 +9,29 @@ const io = require('socket.io')(http)
 /* App Configuration */
 
 // Make the files in the public folder available to the world
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/public/'))
 
-app.get('/:room/', function(req, res)
+// app.get('/', function(req, res)
+// {
+//     res.sendFile('/public/index.html/')
+// })
+
+app.get('/:room', function(req, res)
 {
-  res.sendFile(__dirname + '/')
+    // console.log('req.params.room=', req.params.room)
+    res.sendFile(__dirname + '/public/index.html')
 })
 let roomValue: number = 0
 
 io.on('connection', (socket) =>
 {
-    console.log(socket)
-    if (io.nsps['/'].adapter.rooms[roomValue] 
-        && io.nsps['/'].adapter.rooms[roomValue].length == 2
-    ) 
+    socket.on('handshake', (data: string) =>
     {
-        roomValue++
-    }
+        if (data) console.log('path:', data)
+    })
+    if (io.nsps['/'].adapter.rooms[roomValue] 
+        && io.nsps['/'].adapter.rooms[roomValue].length == 2) roomValue++ 
+
     socket.join(roomValue)
 
     io.sockets.in(roomValue).emit('connectToRoom', "you are in room #" + roomValue)
