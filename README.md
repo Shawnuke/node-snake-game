@@ -38,7 +38,9 @@ A live demo of the project can be found at [this address](https://node-snake-gam
 - generate canvas color scheme on page load
  
 # Known Issues
-- 
+- in multiplayer game, if one of the players have internet issues, snakes positions could possibly be different in both clients ; it comes from the fact that server send to clients ***directions*** and not ***positions***. It might be done in an upcoming version.
+- Multiple hits on the "restart" button increases the framerate, then gets back to normal after game over.
+- canvas visual proportions are document-size dependent (it can currently shrink because of right side buttons)
  
 # Built With
 * [Node.js](http://nodejs.org/)
