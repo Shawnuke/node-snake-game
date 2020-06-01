@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.on('chat message', (msg) => {
             console.log(msg);
         });
-        let silent = false;
+        let silentDisconnexion = false;
         socket.on('errorMsg', (msg) => {
             switch (msg) {
                 case '1':
@@ -26,15 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log(msg);
                     break;
             }
-            silent = true;
+            silentDisconnexion = true;
         });
         socket.on('disconnect', () => {
-            if (!silent)
-                console.log('you were disconnected');
-        });
-        const $toto = document.querySelector('.toto');
-        $toto.addEventListener('click', () => {
-            socket.disconnect();
+            if (!silentDisconnexion)
+                console.log('oops, you were disconnected. Please verify the quality of your connection');
         });
     };
     $button.addEventListener('click', () => {

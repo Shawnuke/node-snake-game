@@ -22,7 +22,7 @@ io.on('connection', (socket) => {
     const path = url.pathname.substring(1);
     const assignRoom = (requestedRoom) => {
         console.log('requestedRoom is', requestedRoom ? requestedRoom : 'none');
-        if (!requestedRoom) // first player
+        if (!requestedRoom) // first player entering the room
          {
             // if roomValue is taken, take next room
             if (io.nsps['/'].adapter.rooms[roomValue])
@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
             // if roomValue is empty
             return roomValue;
         }
-        else // 2nd or 3rd player
+        else // 2nd or 3rd player entering the room
          {
             const roomTested = io.nsps['/'].adapter.rooms[requestedRoom];
             if (roomTested && roomTested.length == 1) // if room exists and is not full
@@ -49,26 +49,13 @@ io.on('connection', (socket) => {
     if (currentRoom == null) {
         socket.emit('errorMsg', '1');
         socket.disconnect();
+        console.log('socket was forced disconnect');
     }
     socket.join(currentRoom);
-    // /* case first player */
-    // if (!io.nsps['/'].adapter.rooms[roomValue]) // if suggested room is available, join it
-    // {
-    //     socket.join(roomValue)
-    //     console.log('he joined room#' + roomValue)
-    //     socket.emit('chat message', 'awaiting player 2')
-    // }
-    // else if (io.nsps['/'].adapter.rooms[roomValue]) // if the room already exist, create another...
-    // {
-    //     roomValue++ 
-    //     socket.join(roomValue) // ...and join it
-    //     console.log('he joined room#' + roomValue)
-    //     socket.emit('chat message', 'awaiting player 2')
-    // }
-    // // socket.emit('chat message', 'welcome aboard!')
-    // // socket.broadcast.emit('chat message', 'somebody joined')
-    socket.on('disconnect', () => {
+    socket.broadcast.emit('chat message', 'your friend joined the party');
+    socket.on('disconnect', (reason) => {
         console.log('socket disconnected from room#' + currentRoom);
+        console.log('reason: ', reason);
         // io.sockets.in(roomValue).emit('chat message', 'your friend abandonned you')
         socket.broadcast.emit('chat message', 'your friend left the party');
     });

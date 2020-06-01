@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () =>
         {
             console.log(msg)
         })
-        let silent = false
+        let silentDisconnexion = false
 
         socket.on('errorMsg', (msg: string) => 
         {
@@ -40,12 +40,12 @@ document.addEventListener('DOMContentLoaded', () =>
                 console.log(msg)
                     break;
             }
-            silent = true
+            silentDisconnexion = true
         })
 
         socket.on('disconnect', () =>
         {
-            if (!silent) console.log('oops, you were disconnected. Please verify the quality of your connection')
+            if (!silentDisconnexion) console.log('oops, you were disconnected. Please verify the quality of your connection')
         })
     }
     
