@@ -50,8 +50,8 @@ class Snake {
             };
         this.direction =
             {
-                x: 1,
-                y: 0
+                x: _options.direction.x,
+                y: _options.direction.y
             };
         this.body = [];
         this.isAlive = true;
@@ -70,6 +70,24 @@ class Snake {
         this.head.y += this.direction.y;
         this.body.push({ x: this.head.x, y: this.head.y }); // add a block ahead of the snake
         this.body.shift(); // remove the last block of its tail
+    }
+    outerRingCollision(_canvas) {
+        if (this.head.x <= 0) {
+            this.head.x = 0;
+            this.direction.x = 0;
+        }
+        else if (this.head.x >= 11) {
+            this.head.x = 11;
+            this.direction.x = 0;
+        }
+        if (this.head.y <= 0) {
+            this.head.y = 0;
+            this.direction.y = 0;
+        }
+        else if (this.head.y >= 19) {
+            this.head.y = 19;
+            this.direction.y = 0;
+        }
     }
     fatalCollisionDetection(_canvas) {
         /* outer ring */
@@ -150,16 +168,173 @@ class Snake {
         );
         this.context.fill();
     }
-    setDirectionTo(a, b) {
-        this.direction.x = a;
-        this.direction.y = b;
+    setDirectionTo(input) {
+        switch (input) {
+            case 0:
+                this.direction.x = 0;
+                this.direction.y = -1;
+                break;
+            case 1:
+                this.direction.x = 1;
+                this.direction.y = 0;
+                break;
+            case 2:
+                this.direction.x = 0;
+                this.direction.y = 1;
+                break;
+            case 3:
+                this.direction.x = -1;
+                this.direction.y = 0;
+                break;
+            default:
+                break;
+        }
     }
     grow() {
         this.body.push({ x: this.head.x, y: this.head.y });
     }
 }
+const $button = document.querySelector('.js-invite');
+const url = new URL(window.location.href);
+const path = url.pathname.substring(1);
+// const multiCountdown = () =>
+// {
+//     let sec = 3
+//     const countdown = setInterval(() => 
+//     {
+//         console.log(sec)
+//         sec--
+//         if (sec == 0) 
+//         {
+//             window.clearInterval(countdown)
+//         }
+//     }, 1000)
+// }
+// let multiRunning = false
+const connect = () => {
+    const socket = io();
+    // controls
+    const keyboardInput = (_event) => {
+        let input = 5;
+        switch (_event.key) {
+            case 'ArrowUp':
+            case 'z':
+                // if (snake.head.x == snake.head.previousX) return
+                input = 0;
+                break;
+            case 'ArrowRight':
+            case 'd':
+                // if (snake.head.y == snake.head.previousY) return
+                input = 1;
+                break;
+            case 'ArrowDown':
+            case 's':
+                // if (snake.head.x == snake.head.previousX) return
+                input = 2;
+                break;
+            case 'ArrowLeft':
+            case 'q':
+                // if (snake.head.y == snake.head.previousY) return
+                input = 3;
+                break;
+            case 'g':
+                snake.grow();
+                break;
+        }
+        if (input < 5) {
+            socket.emit('input', input);
+            snake.setDirectionTo(input);
+        }
+    };
+    document.addEventListener('keydown', keyboardInput);
+    // if (!path)   // 1st player
+    // {
+    //     console.log('give this link to your friend')
+    // }
+    socket.on('chat message', (msg) => {
+        console.log(msg);
+    });
+    // socket.on('snakeParam', (param) => // assign snake initial position
+    // {
+    //     snake.head.x = param.posX
+    //     snake.head.x = param.posY
+    //     snake.direction.x = param.dirX
+    //     snake.direction.x = param.dirY
+    //     snakes.push(snake)
+    // })
+    // socket.on('enemyParam', (param) => // assign snake initial position
+    // {
+    //     const enemy = new Snake(
+    //         {
+    //             context: context,
+    //             x: 3,
+    //             y: 10,
+    //             direction: 
+    //             {
+    //                 x: 1,
+    //                 y: 0
+    //             },
+    //             color: '#5C25C2',
+    //             apples: apples,
+    //             scale: frame.scale
+    //         })
+    //     enemy.head.x = param.posX
+    //     enemy.head.x = param.posY
+    //     enemy.direction.x = param.dirX
+    //     enemy.direction.x = param.dirY
+    //     snakes.push(enemy)
+    // })
+    // let silentDisconnexion = false
+    // socket.on('errorMsg', (msg: string) => 
+    // {
+    //     switch (msg) 
+    //     {
+    //         case '1':
+    //             console.log('Sorry, but the party you\'re trying to join is either full or empty. Make sure you wrote the address right, or please ask your friend to try again.')
+    //             break;
+    //         default:
+    //         console.log(msg)
+    //             break;
+    //     }
+    //     silentDisconnexion = true
+    // })
+    // socket.on('disconnect', () =>
+    // {
+    //     if (!silentDisconnexion) console.log('oops, you were disconnected. Please verify the quality of your connection')
+    // })
+    // socket.on('gameStatus', (status) => 
+    // {
+    //     switch (status) 
+    //     {
+    //         case 'start':
+    //             // multiRunning = true
+    //             // multiCountdown()
+    //             document.addEventListener('keydown', multiControls)
+    //             break
+    //         case 'stop':
+    //             break
+    //         default:
+    //             break
+    //     }
+    // })
+    const useEnemyInput = (direction) => {
+        console.log('enemyDirection:', direction);
+        snakes[1].setDirectionTo(direction);
+    };
+    socket.on('enemyInput', useEnemyInput);
+};
+connect();
+// $button.addEventListener('click', () =>
+// {
+//     connect()
+// })
+// if (path)
+// {
+//     connect()
+// }
 /// <reference path="Snake.ts" />
 /// <reference path="Apple.ts" />
+/// <reference path="client.ts" />
 /* Set up */
 const $wrapper = document.querySelector('.wrapper');
 const $canvas = document.querySelector('.js-canvas');
@@ -183,50 +358,68 @@ apples.push(apple);
 let snakes = [];
 const snake = new Snake({
     context: context,
-    x: 3,
-    y: 10,
+    x: 5,
+    y: 3,
+    direction: {
+        x: 0,
+        y: 1
+    },
     color: '#32CE36',
     apples: apples,
     scale: frame.scale
 });
 snakes.push(snake);
-// controls
-document.addEventListener("keydown", (_event) => {
-    switch (_event.keyCode) {
-        case 38: // up arrow
-        case 90: // Z key
-            // if (snake.direction.y == 1) return // prevent the player from going straight back in the opposite direction
-            // if (snake.head.x == snake.body[length-1].x && snake.head.y == snake.body[length-1].y + 1) return // works, but ugly
-            if (snake.head.x == snake.head.previousX)
-                return;
-            snake.setDirectionTo(0, -1);
-            break;
-        case 39: // right arrow
-        case 68: // D key
-            // if (snake.direction.x == -1) return
-            if (snake.head.y == snake.head.previousY)
-                return;
-            snake.setDirectionTo(1, 0);
-            break;
-        case 40: // down arrow
-        case 83: // S key
-            // if (snake.direction.y == -1) return
-            if (snake.head.x == snake.head.previousX)
-                return;
-            snake.setDirectionTo(0, 1);
-            break;
-        case 37: // left arrow
-        case 81: // Q key
-            // if (snake.direction.x == 1) return
-            if (snake.head.y == snake.head.previousY)
-                return;
-            snake.setDirectionTo(-1, 0);
-            break;
-        case 71: // G key
-            snake.grow();
-            break;
-    }
+const enemy = new Snake({
+    context: context,
+    x: 5,
+    y: 3,
+    direction: {
+        x: 0,
+        y: 1
+    },
+    color: '#5C25C2',
+    apples: apples,
+    scale: frame.scale
 });
+snakes.push(enemy);
+let localGame = true;
+// controls
+// const controls = (_event: KeyboardEvent) =>
+// {
+//     console.log(_event)
+//     switch (_event.key)
+//     {
+//         case 'ArrowUp':
+//         case 'z':
+//             // if (snake.direction.y == 1) return // prevent the player from going straight back in the opposite direction
+//             // if (snake.head.x == snake.body[length-1].x && snake.head.y == snake.body[length-1].y + 1) return // works, but ugly
+//             if (snake.head.x == snake.head.previousX) return
+//             snake.setDirectionTo(0, -1)
+//             break
+//         case 'ArrowRight':
+//         case 'd':
+//             // if (snake.direction.x == -1) return
+//             if (snake.head.y == snake.head.previousY) return
+//             snake.setDirectionTo(1, 0)
+//             break
+//         case 'ArrowDown':
+//         case 's':
+//             // if (snake.direction.y == -1) return
+//             if (snake.head.x == snake.head.previousX) return
+//             snake.setDirectionTo(0, 1)
+//             break
+//         case 'ArrowLeft':
+//         case 'q':
+//             // if (snake.direction.x == 1) return
+//             if (snake.head.y == snake.head.previousY) return
+//             snake.setDirectionTo(-1, 0)
+//             break
+//         case 'g':
+//             snake.grow()
+//             break
+//     }
+// }
+// document.addEventListener('keydown', controls)
 const drawGrid = (_canvas, _color) => {
     context.strokeStyle = _color;
     context.beginPath();
@@ -260,78 +453,122 @@ const fps = 12;
 const loop = () => {
     setTimeout(() => {
         const game = window.requestAnimationFrame(loop);
-        // Maths
+        /**
+         * Update Phase
+         */
         for (const _snake of snakes) {
             // update snakes positions
             _snake.updatePosition();
-            // resolve snakes collisions
-            _snake.fatalCollisionDetection(frame);
-            if (!_snake.isAlive) {
-                window.cancelAnimationFrame(game);
-                console.log('you died. max length:', _snake.body.length);
-            }
-            // resolve snake-apple collisions
-            apples = _snake.appleCollisionDetection(apples);
-            if (_snake.ate) {
-                _snake.ate = false;
-                _snake.grow();
-            }
-            // Clear canvas
-            context.clearRect(0, 0, frame.width, frame.height);
-            // Draw
+            _snake.outerRingCollision(frame);
+            // // resolve snakes collisions
+            // _snake.fatalCollisionDetection(frame)
+            // if (!_snake.isAlive) 
+            // {
+            //     window.cancelAnimationFrame(game)
+            //     document.removeEventListener('keydown', controls)
+            //     console.log('you died. max length:', _snake.body.length)
+            // }
+            // // resolve snake-apple collisions
+            // apples = _snake.appleCollisionDetection(apples)
+            // if (_snake.ate)
+            // {
+            //     _snake.ate = false
+            //     _snake.grow()
+            // }
+        }
+        /**
+         * Drawing phase
+         */
+        /* Clear canvas */
+        context.clearRect(0, 0, frame.width, frame.height);
+        /* Draw */
+        for (const _snake of snakes) {
             _snake.draw();
         }
-        for (const _apple of apples) {
-            if (_apple.isEaten) {
-                _apple.relocate();
-            }
-            _apple.draw();
-        }
-        /* style the map */
-        // drawGrid(frame, 'black')
         drawCheckeredBackground(frame, '#FFFFFF22');
     }, 1000 / fps);
 };
 loop();
-document.addEventListener('DOMContentLoaded', () => {
-    const $button = document.querySelector('.js-invite');
-    const url = new URL(window.location.href);
-    const path = url.pathname.substring(1);
-    // const room = url.get('room')
-    const connect = () => {
-        const socket = io();
-        if (path) // 2nd or 3rd player
-         {
-            socket.emit('handshake', path);
-        }
-        else // 1st player
-         {
-            console.log('give this link to your friend');
-        }
-        socket.on('chat message', (msg) => {
-            console.log(msg);
-        });
-        let silentDisconnexion = false;
-        socket.on('errorMsg', (msg) => {
-            switch (msg) {
-                case '1':
-                    console.log('Sorry, but the party you\'re trying to join is either full or empty. Make sure you wrote the address right, or please ask your friend to try again.');
-                    break;
-                default:
-                    console.log(msg);
-                    break;
-            }
-            silentDisconnexion = true;
-        });
-        socket.on('disconnect', () => {
-            if (!silentDisconnexion)
-                console.log('oops, you were disconnected. Please verify the quality of your connection');
-        });
-    };
-    $button.addEventListener('click', () => {
-        connect();
-    });
-    if (path) {
-        connect();
-    }
-});
+// const loop = () =>
+// {
+//     setTimeout(() => 
+//     {
+//         const game = window.requestAnimationFrame(loop)
+//         // Maths
+//         for (const _snake of snakes)
+//         {
+//             // update snakes positions
+//             _snake.updatePosition()
+//             // resolve snakes collisions
+//             _snake.fatalCollisionDetection(frame)
+//             if (!_snake.isAlive) 
+//             {
+//                 window.cancelAnimationFrame(game)
+//                 document.removeEventListener('keydown', controls)
+//                 console.log('you died. max length:', _snake.body.length)
+//             }
+//             // resolve snake-apple collisions
+//             apples = _snake.appleCollisionDetection(apples)
+//             if (_snake.ate)
+//             {
+//                 _snake.ate = false
+//                 _snake.grow()
+//             }
+//             // Clear canvas
+//             context.clearRect(0, 0, frame.width, frame.height)
+//             // Draw
+//             _snake.draw()
+//         }
+//         for (const _apple of apples)
+//         {
+//             if (_apple.isEaten)
+//             {
+//                 _apple.relocate()
+//             }
+//             _apple.draw()
+//         }
+//         /* style the map */
+//         // drawGrid(frame, 'black')
+//         drawCheckeredBackground(frame, '#FFFFFF22')
+//     }, 1000/fps)
+// }
+// loop()
+// const $restart: Element = document.querySelector('.js-restart')
+// $restart.addEventListener('click', () =>
+// {
+//     document.removeEventListener('keydown', controls)
+//     snakes.forEach(_snake => 
+//     {
+//         snake.isAlive = true
+//         snake.body = []
+//         snake.grow()
+//         snake.grow()
+//         snake.grow()
+//         snake.head.x = 9
+//         snake.head.y = 3
+//         snake.direction.x = 0
+//         snake.direction.y = 1
+//     })
+//     // console.log(snakes)
+//     $canvas.focus()
+//     // snakes.splice(0, 1)
+//     // console.log(snakes)
+//     // const snake = new Snake(
+//     // {
+//     //     context: context,
+//     //     x: 9,
+//     //     y: 3,
+//     //     direction: 
+//     //     {
+//     //         x: 0,
+//     //         y: 1
+//     //     },
+//     //     color: '#32CE36',
+//     //     apples: apples,
+//     //     scale: frame.scale
+//     // })
+//     // snakes.push(snake)
+//     // console.log(snakes)
+//     document.addEventListener('keydown', controls)
+//     loop()
+// })
