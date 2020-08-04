@@ -49,6 +49,9 @@ A live demo of the project can be found at [this address](https://node-snake-gam
  
 # Author
 * **Corentin Boulanouar** - [Shawnuke](https://github.com/Shawnuke)
+
+# Forked from
+* [jamesward/hello-node_js-express](https:/github.com/jamesward/hello-node_js-express)
  
 # License
 [MIT](LICENSE) © Corentin Boulanouar
